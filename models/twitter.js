@@ -1,25 +1,21 @@
-// Uses twitter-lite from here https://github.com/draftbit/twitter-lite
-// I will convert this to a synchronous code
 const Twitter = require('twitter-lite');
 const colors = require('colors');
-const config = require('config');
-const http = require('http');
+require('dotenv').config()
 const fs = require('fs');
 const bigInt = require("big-integer");
-const { resolve } = require('path');
+//const { resolve } = require('path');
 const axios = require('axios').default;
-
 
 // TODO: should change http.get to axios get
 
 // Make the twitter client
 const client = new Twitter({
-	subdomain: "api", // "api" is the default (change for other subdomains)
-	version: "1.1", // version "1.1" is the default (change for other subdomains)
-	consumer_key: config.twitter.consumer_key, // from Twitter.
-	consumer_secret: config.twitter.consumer_secret, // from Twitter.
-	access_token_key: config.twitter.access_token_key, // from your User (oauth_token)
-	access_token_secret: config.twitter.access_token_secret // from your User (oauth_token_secret)
+	subdomain: "api", 
+	version: "1.1",
+	consumer_key: process.env.CONSUMER_KEY, 
+	consumer_secret: process.env.CONSUMER_SECRET, 
+	access_token_key: process.env.ACCESS_TOKEN, 
+	access_token_secret: process.env.ACCESS_TOKEN_SECRET 
 });
 
 // Starting point
@@ -69,7 +65,7 @@ async function lets_twitter(last_id) {
 // Get a bunch of likes
 async function get_likes(last_id) {
 	const parameters = {
-		screen_name: config.twitter.targetAccount,
+		screen_name: process.env.TARGET_ACCOUNT,
 		count: 50,
 		include_entities: true,
 		include_ext_alt_text: true,
@@ -178,7 +174,7 @@ async function download_video(entity, element) {
 		//now lets clean the url
 		const file_url = video_url.replace("https", "http");
 
-		const dirName = config.files.downloadLocation + element.user.screen_name + '/';
+		const dirName = process.env.DOWNLOAD_LOCATION + element.user.screen_name + '/';
 		if (!fs.existsSync(dirName)) fs.mkdirSync(dirName);		
 
 		const fileName = dirName + bitrate + "_" + file_url.replace(/^.*[\\\/]/, '').split('?')[0];
@@ -200,7 +196,7 @@ async function download_photo(entity, element) {
         console.log('working on the download'.green)
         var photo_url = entity.media_url;
         const file_url = photo_url.replace("https", "http");
-        const dirName = config.files.downloadLocation + element.user.screen_name + '/';
+        const dirName = process.env.DOWNLOAD_LOCATION + element.user.screen_name + '/';
         if (!fs.existsSync(dirName)) {
             fs.mkdirSync(dirName);
         }

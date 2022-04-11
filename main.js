@@ -7,6 +7,6 @@ console.log('hello, running first time');
 lets_twitter(); 
 
 cron.schedule('*/10 * * * *', () => {
-	console.log('Running Every 10 Minute');
+	console.log('Running Every 5 Minute');
 	lets_twitter(undefined);
 });

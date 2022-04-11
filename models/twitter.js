@@ -35,12 +35,10 @@ async function lets_twitter(last_id) {
 			process.stdout.write("Processing ")
 
 			try{
-				const result = process_tweet(tweet);
-                console.log('here')
+				const result = await process_tweet(tweet);
 
 				if(result == 'success'){
-					console.log('unliking like'.red);
-					destroy_like(tweet.id_str);
+					await destroy_like(tweet.id_str);
 				}
 			}
             catch(error){
@@ -107,15 +105,15 @@ async function process_tweet(element) {
 		for(const entity of element.extended_entities.media){
 			if (entity.type == "video") {
 				console.log("it is a video..".green);
-				download_video(entity, element);
+				await download_video(entity, element);
 			} 
 			else if (entity.type == "photo") {
 				console.log("it is a photo..".green);
-				download_photo(entity, element);
+				await download_photo(entity, element);
 			} 
 			else if (entity.type == "animated+gif") {
 				console.log("it is a an animated GIF..".green);
-				download_video(entity, element);
+				await download_video(entity, element);
 			} 
 			else {
 				console.log((`it is a ${entity.type}`).bgRed.white);
@@ -159,7 +157,6 @@ async function download_video(entity, element) {
         // loop through variants
 		var video_url = '';
 		var bitrate = '0';
-		console.log('working on the download'.green)
 		
         // Pick the best bitrate
 		entity.video_info.variants.forEach((variant) => {
@@ -182,7 +179,7 @@ async function download_video(entity, element) {
         const response = await axios.get(file_url, {responseType: 'stream'});
 
         response.data.pipe(writer);
-        console.log('Done Downloading'.green)
+        console.log('Done Downloading Video'.green)
     } 
     catch (error) {
         console.error('Failed'.bgRed.white)
@@ -193,7 +190,6 @@ async function download_video(entity, element) {
 
 async function download_photo(entity, element) {
     try {
-        console.log('working on the download'.green)
         var photo_url = entity.media_url;
         const file_url = photo_url.replace("https", "http");
         const dirName = process.env.DOWNLOAD_LOCATION + element.user.screen_name + '/';
@@ -216,7 +212,6 @@ async function download_photo(entity, element) {
 
 // unlike
 async function destroy_like(id) {
-	console.log(('deleteing ' + id).red);
     
 	const parameters = { id: id, include_entities: false};
 

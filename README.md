@@ -1,4 +1,4 @@
-# js_docker_twitter_favorites_downloader
+# js_twitter_likes_downloader
  scrapes your favorites, downloads the media, un-favorite
  
 
